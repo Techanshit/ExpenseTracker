@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flo — Personal Finance</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Mobile Overlay -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">
+        <i class="fa-solid fa-wave-square"></i>
+      </div>
+      <span class="logo-text">flo</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item active" data-section="dashboard">
+        <i class="fa-solid fa-house-chimney"></i>
+        <span>Dashboard</span>
+        <div class="nav-indicator"></div>
+      </a>
+      <a href="#" class="nav-item" data-section="transactions">
+        <i class="fa-solid fa-arrow-right-arrow-left"></i>
+        <span>Transactions</span>
+      </a>
+      <a href="#" class="nav-item" data-section="analytics">
+        <i class="fa-solid fa-chart-pie"></i>
+        <span>Analytics</span>
+      </a>
+      <a href="#" class="nav-item" data-section="settings">
+        <i class="fa-solid fa-gear"></i>
+        <span>Settings</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="user-avatar-sm">A</div>
+        <div class="user-info-sm">
+          <span class="user-name-sm">Alex Morgan</span>
+          <span class="user-role-sm">Personal</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content" id="mainContent">
+
+    <!-- HEADER -->
+    <header class="top-header" id="topHeader">
+      <div class="header-left">
+        <button class="hamburger-btn" id="hamburgerBtn">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <div class="header-greeting">
+          <h1 class="greeting-text" id="greetingText">Good morning</h1>
+          <p class="header-date" id="headerDate"></p>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="search-wrapper">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input type="text" class="search-input" id="searchInput" placeholder="Search transactions…" />
+        </div>
+        <button class="theme-toggle" id="themeToggle" title="Toggle theme">
+          <i class="fa-solid fa-moon" id="themeIcon"></i>
+        </button>
+        <div class="user-avatar">A</div>
+      </div>
+    </header>
+
+    <!-- DASHBOARD SECTION -->
+    <section class="section" id="section-dashboard">
+
+      <!-- STATS CARDS -->
+      <div class="stats-grid">
+        <div class="stat-card balance-card">
+          <div class="stat-card-header">
+            <span class="stat-label">Net Balance</span>
+            <div class="stat-icon-wrap balance-icon">
+              <i class="fa-solid fa-wallet"></i>
+            </div>
+          </div>
+          <div class="stat-value" id="statBalance">$0.00</div>
+          <div class="stat-sub">Total across all accounts</div>
+          <div class="stat-glow"></div>
+        </div>
+
+        <div class="stat-card income-card">
+          <div class="stat-card-header">
+            <span class="stat-label">Total Income</span>
+            <div class="stat-icon-wrap income-icon">
+              <i class="fa-solid fa-arrow-trend-up"></i>
+            </div>
+          </div>
+          <div class="stat-value" id="statIncome">$0.00</div>
+          <div class="stat-sub" id="statIncomeCount">0 transactions</div>
+          <div class="stat-glow"></div>
+        </div>
+
+        <div class="stat-card expense-card">
+          <div class="stat-card-header">
+            <span class="stat-label">Total Expenses</span>
+            <div class="stat-icon-wrap expense-icon">
+              <i class="fa-solid fa-arrow-trend-down"></i>
+            </div>
+          </div>
+          <div class="stat-value" id="statExpenses">$0.00</div>
+          <div class="stat-sub" id="statExpenseCount">0 transactions</div>
+          <div class="stat-glow"></div>
+        </div>
+
+        <div class="stat-card total-card">
+          <div class="stat-card-header">
+            <span class="stat-label">All Transactions</span>
+            <div class="stat-icon-wrap total-icon">
+              <i class="fa-solid fa-layer-group"></i>
+            </div>
+          </div>
+          <div class="stat-value" id="statTotal">0</div>
+          <div class="stat-sub">Lifetime records</div>
+          <div class="stat-glow"></div>
+        </div>
+      </div>
+
+      <!-- MAIN GRID -->
+      <div class="dashboard-grid">
+
+        <!-- ADD TRANSACTION FORM -->
+        <div class="glass-card form-card">
+          <div class="card-header">
+            <h2 class="card-title">New Transaction</h2>
+            <span class="card-badge" id="formMode">Add</span>
+          </div>
+
+          <form id="transactionForm" novalidate>
+            <input type="hidden" id="editId" />
+
+            <div class="form-group">
+              <input type="text" id="txName" class="form-input" placeholder=" " autocomplete="off" />
+              <label class="form-label" for="txName">Transaction Name</label>
+              <span class="form-error" id="nameError"></span>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <input type="number" id="txAmount" class="form-input" placeholder=" " min="0.01" step="0.01" autocomplete="off" />
+                <label class="form-label" for="txAmount">Amount ($)</label>
+                <span class="form-error" id="amountError"></span>
+              </div>
+              <div class="form-group">
+                <input type="date" id="txDate" class="form-input date-input" placeholder=" " />
+                <label class="form-label" for="txDate">Date</label>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group select-group">
+                <select id="txCategory" class="form-input form-select">
+                  <option value="" disabled selected>Category</option>
+                  <option value="Food & Dining">🍽 Food & Dining</option>
+                  <option value="Transport">🚗 Transport</option>
+                  <option value="Shopping">🛍 Shopping</option>
+                  <option value="Entertainment">🎮 Entertainment</option>
+                  <option value="Health">💊 Health</option>
+                  <option value="Housing">🏠 Housing</option>
+                  <option value="Utilities">⚡ Utilities</option>
+                  <option value="Salary">💼 Salary</option>
+                  <option value="Freelance">💻 Freelance</option>
+                  <option value="Investment">📈 Investment</option>
+                  <option value="Other">✨ Other</option>
+                </select>
+                <span class="form-error" id="categoryError"></span>
+              </div>
+
+              <div class="form-group type-group">
+                <div class="type-toggle">
+                  <button type="button" class="type-btn active" data-type="income" id="typeIncome">
+                    <i class="fa-solid fa-plus"></i> Income
+                  </button>
+                  <button type="button" class="type-btn" data-type="expense" id="typeExpense">
+                    <i class="fa-solid fa-minus"></i> Expense
+                  </button>
+                </div>
+                <input type="hidden" id="txType" value="income" />
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn-primary" id="submitBtn">
+                <span class="btn-text">Add Transaction</span>
+                <i class="fa-solid fa-arrow-right btn-icon"></i>
+                <span class="btn-ripple"></span>
+              </button>
+              <button type="button" class="btn-ghost" id="cancelEdit" style="display:none;">
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- INSIGHTS PANEL -->
+        <div class="glass-card insights-card">
+          <div class="card-header">
+            <h2 class="card-title">Insights</h2>
+            <i class="fa-solid fa-sparkles card-icon-accent"></i>
+          </div>
+          <div class="insights-list" id="insightsList">
+            <div class="insight-empty">Add transactions to see insights</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- CHART CARD -->
+      <div class="glass-card chart-card">
+        <div class="card-header">
+          <h2 class="card-title">Spending by Category</h2>
+          <div class="chart-filters">
+            <button class="chip active" data-filter="all" id="filterAll">All</button>
+            <button class="chip" data-filter="income">Income</button>
+            <button class="chip" data-filter="expense">Expense</button>
+          </div>
+        </div>
+        <div class="chart-container" id="chartContainer">
+          <canvas id="categoryChart"></canvas>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- TRANSACTIONS SECTION -->
+    <section class="section hidden" id="section-transactions">
+      <div class="glass-card full-card">
+        <div class="card-header">
+          <h2 class="card-title">All Transactions</h2>
+          <div class="tx-controls">
+            <select class="control-select" id="sortSelect">
+              <option value="date-desc">Newest first</option>
+              <option value="date-asc">Oldest first</option>
+              <option value="amount-desc">Highest amount</option>
+              <option value="amount-asc">Lowest amount</option>
+            </select>
+            <select class="control-select" id="filterType">
+              <option value="all">All types</option>
+              <option value="income">Income only</option>
+              <option value="expense">Expenses only</option>
+            </select>
+          </div>
+        </div>
+        <div id="transactionList" class="transaction-list"></div>
+      </div>
+    </section>
+
+    <!-- ANALYTICS SECTION -->
+    <section class="section hidden" id="section-analytics">
+      <div class="analytics-grid">
+        <div class="glass-card full-card chart-card">
+          <div class="card-header">
+            <h2 class="card-title">Category Breakdown</h2>
+          </div>
+          <div class="chart-container">
+            <canvas id="analyticsChart"></canvas>
+          </div>
+        </div>
+        <div class="glass-card insights-card">
+          <div class="card-header">
+            <h2 class="card-title">Deep Insights</h2>
+          </div>
+          <div class="insights-list" id="deepInsightsList"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SETTINGS SECTION -->
+    <section class="section hidden" id="section-settings">
+      <div class="glass-card settings-card">
+        <div class="card-header">
+          <h2 class="card-title">Settings</h2>
+        </div>
+        <div class="settings-list">
+          <div class="setting-item">
+            <div class="setting-info">
+              <span class="setting-name">Dark Mode</span>
+              <span class="setting-desc">Use dark theme across the app</span>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="darkModeToggle" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="setting-item danger-zone">
+            <div class="setting-info">
+              <span class="setting-name">Clear All Data</span>
+              <span class="setting-desc">Permanently delete all transactions</span>
+            </div>
+            <button class="btn-danger" id="clearDataBtn">
+              <i class="fa-solid fa-trash"></i> Clear Data
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- DELETE CONFIRM MODAL -->
+  <div class="modal-overlay" id="deleteModal">
+    <div class="modal-box">
+      <div class="modal-icon danger">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <h3 class="modal-title">Delete transaction?</h3>
+      <p class="modal-desc">This action cannot be undone.</p>
+      <div class="modal-actions">
+        <button class="btn-ghost" id="cancelDelete">Keep it</button>
+        <button class="btn-danger" id="confirmDelete">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
